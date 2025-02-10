@@ -2,9 +2,8 @@ import datetime, random
 def getBirthdays(numberOfBirthdays):
     """ Returns a list of number random date objects for birthdays """
     birthdays = []
-    for i in range(numberOfBirthdays):
-        # The year is unimportant for our simulation, as long as alll
-        # birthdays have the same year
+    for _ in range(numberOfBirthdays):
+        # The year is unimportant for our simulation, as long as alll birthdays have the same year
         startOfYear = datetime.date(2001, 1, 1)
 
         # Get a random day into the year:
@@ -83,8 +82,7 @@ print('100,000 simulations run.')
 
 # Display simulation results:
 probability = round(simMatch / 100000 * 100, 2)
-print('Out of 100,000 simulations of', numBDays, 'people there was a')
-print('matching birthday in that group', simMatch, 'times. This means')
-print('that', numBDays, 'people have a', probability, '% chance of')
-print('having a matching birthday in their group.')
-print('That\'s probably more than you would think!')
+print(f"""Out of 100,000 simulations of {numBDays} people, there was a  
+matching birthday in that group {simMatch} times. This means that {numBDays}
+people have a {probability} % chance of having a matching birthday in their 
+group. That\'s probably more than you would think!""")
