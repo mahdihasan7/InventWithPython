@@ -5,7 +5,6 @@ print('Enter the encrypted caesar cipher message to hack.')
 message = input("> ")
 
 # Every possible symbol that can be encrypted/decrypted:
-# (This must match the SYMBOLS used when encrypting the message.)
 SYMBOLS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 for key in range(len(SYMBOLS)): # Loop through every possible key.

@@ -9,8 +9,7 @@ CLUBS    = chr(9827)
 BACKSIDE = 'backside'
 
 def main():
-    print("""Blackjack, by Al Sweigart al@inventwithpython.com
-  
+    print("""Blackjack,   
       Rules:
         Try to get as close to 21 without going over.
         Kings, Queens, and Jacks are worth 10 points.

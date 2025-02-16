@@ -3,9 +3,7 @@ try:
 except ImportError:
     pass
 
-"""Every possible symbol that can be encrypted/decrypted:
-(!) You can add numbers and punctuation marks to encrypt those
-symbols as well."""
+# Every possible symbol that can be encrypted/decrypted:
 SYMBOLS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 print("""The caesar cipher encrypts letters by shifting them over by a
