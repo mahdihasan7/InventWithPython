@@ -20,9 +20,6 @@ CANVAS_WIDTH -= 1
 # Leave room at the bottom few rows for the command info lines.
 CANVAS_HEIGHT -= 5
 
-canvas = {}
-cursorX = 0
-cursorY = 0
 
 def getCanvasString(canvasData, cx, cy):
     canvasStr = ''
@@ -61,84 +58,84 @@ def getCanvasString(canvasData, cx, cy):
                 canvasStr += ' '
         canvasStr += '\n'
     return canvasStr
+def main():
 
-moves = []
-while True:
-    print(getCanvasString(canvas, cursorX, cursorY))
-    
-    print('WASD keys to move, H for help, C to clear, '
-          + 'F to save, or QUIT.')
-    response = input('> ').upper()
+    canvas = {}
+    cursorX = 0
+    cursorY = 0
+    moves = []
 
-    if response == 'QUIT':
-        print('Thanks for playing!')
-        sys.exit()
-    elif response == 'H':
-        print('''
-        Enter a W, A, S, and D characters to move the cursor and
-        draw a line behind it as it moves. For example, ddd
-        draws a line going right and sssdddwwwaaa draws a box.
-        ''')
-        print()
-        print('You can save your drawing to a text file by entering F.')
-        print('Press Enter to return to the program...')
-        continue
-    elif response == 'C':
-        canvas = {}
-        moves.append('C')
-    elif response == 'F':
-        try:
-            print('Enter filename to save to:')
-            filename = input('> ')
+    while True:
+        print(getCanvasString(canvas, cursorX, cursorY))
+        
+        print('WASD keys to move, H for help, C to clear, '
+              + 'F to save, or QUIT.')
+        response = input('> ').upper()
 
-            # Make sure the filename ends with .txt:
-            if not filename.endswith('.txt'):
-                filename += '.txt'
-            with open(filename, 'w', encoding='utf-8') as file:
-                file.write(''.join(moves) + '\n')
-                file.write(getCanvasString(canvas, None,None))
-        except:
-            print('ERROR: Could not save file.')
-
-    for command in response:
-        if command not in ('W', 'A', 'S', 'D'):
+        if response == 'QUIT':
+            print('Thanks for playing!')
+            sys.exit()
+        elif response == 'H':
+            print('''
+            Enter a W, A, S, and D characters to move the cursor and
+            draw a line behind it as it moves. For example, ddd
+            draws a line going right and sssdddwwwaaa draws a box.
+            ''')
+            print('You can save your drawing to a text file by entering F.')
+            input('Press Enter to return to the program...')
             continue
-        moves.append(command)
-
-        if canvas == {}:
-            if command in ('W', 'S'):
-                # Make the first line a horizontal one:
-                canvas[(cursorX, cursorY)] = set(['W', 'S'])
-            elif command in ('A', 'D'):
-                # Make the first line a vertical one:
-                canvas[(cursorX, cursorY)] = set(['A', 'D'])
-
-        if command == 'W' and cursorY > 0:
-            canvas[(cursorX, cursorY)].add(command)
-            cursorY = cursorY - 1
-        elif command == 'S' and cursorY < CANVAS_HEIGHT - 1:
-            canvas[(cursorX, cursorY)].add(command)
-        elif command == 'A' and cursorX > 0:
-            canvas[(cursorX, cursorY)].add(command)
-        elif command == 'D' and cursorX < CANVAS_WIDTH - 1:
-            canvas[(cursorX, cursorY)].add(command)
-            cursorX = cursorX + 1
-        else:
-            '''
-            If the curor doesn't move because it would have moved off
-            the edge of the canvas, then don't change the set at
-            canvas[(cursorX, cursorY)].
-            '''
+        elif response == 'C':
+            canvas = {}
+            cursorX = 0
+            cursorY = 0
+            moves.append('C')
             continue
-        if (cursorX, cursorY) not in canvas:
-            canvas[(cursorX, cursorY)] = set()
+        elif response == 'F':
+            try:
+                print('Enter filename to save to:')
+                filename = input('> ')
 
-        # Add the direction string to this xy point's set:
-        if command == 'W':
-            canvas[(cursorX, cursorY)].add('S')
-        elif command == 'S':
-            canvas[(cursorX, cursorY)].add('W')
-        elif command == 'A':
-            canvas[(cursorX, cursorY)].add('D')
-        elif command == 'D':
-            canvas[(cursorX, cursorY)].add('A')
+                # Make sure the filename ends with .txt:
+                if not filename.endswith('.txt'):
+                    filename += '.txt'
+                with open(filename, 'w', encoding='utf-8') as file:
+                    file.write(''.join(moves) + '\n')
+                    file.write(getCanvasString(canvas, None,None))
+                print(f'Drawing saved to {filename}')
+            except Exception as e:
+                print(f'ERROR: Could not save file. Details: {e}')
+            continue
+
+        for command in response:
+            if command not in ('W', 'A', 'S', 'D'):
+                continue
+            moves.append(command)
+
+            # Initialize the first point in canvas
+            if (cursorX, cursorY) not in canvas:
+                canvas[(cursorX, cursorY)] = set()
+
+            # Update canvas and cursor based on movement
+            if command == 'W' and cursorY > 0:
+                canvas[(cursorX, cursorY)].add(command)
+                canvas[(cursorX, cursorY)].add('S')
+                cursorY -= 1
+            elif command == 'S' and cursorY < CANVAS_HEIGHT - 1:
+                canvas[(cursorX, cursorY)].add(command)
+                canvas[(cursorX, cursorY)].add('W')
+                cursorY += 1
+            elif command == 'A' and cursorX > 0:
+                canvas[(cursorX, cursorY)].add(command)
+                canvas[(cursorX, cursorY)].add('D')
+                cursorX -= 1
+            elif command == 'D' and cursorX < CANVAS_WIDTH - 1:
+                canvas[(cursorX, cursorY)].add(command)
+                canvas[(cursorX, cursorY)].add('A')
+                cursorX += 1
+            
+            # Ensure new cursor poistion is in canvas
+            if (cursorX, cursorY) not in canvas:
+                canvas[(cursorX, cursorY)] = set()
+
+if __name__ == "__main__":
+    main()
