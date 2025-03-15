@@ -12,7 +12,7 @@ WIDTH -= 1
 
 NUM_KELP = 2
 NUM_FISH = 10
-NUM_BUBBLES = 1
+NUM_BUBBLERS = 1
 FRAMES_PER_SECOND = 4
 
 FISH_TYPES = [
@@ -45,19 +45,19 @@ def main():
     bext.clear()
 
     FISHES = []
-    for i in range(NUM_FISH):
+    for _ in range(NUM_FISH):
         FISHES.append(generateFish())
 
     BUBBLERS = []
-    for i in range(NUM_BUBBLERS):
-        BUBBLERS.append(random.ranint(LEFT_EDGE, RIGHT_EDGE))
+    for _ in range(NUM_BUBBLERS):
+        BUBBLERS.append(random.randint(LEFT_EDGE, RIGHT_EDGE))
     BUBBLES = []
 
     KELPS = []
-    for in range(NUM_KELP):
+    for _ in range(NUM_KELP):
         kelpx = random.randint(LEFT_EDGE, RIGHT_EDGE)
         kelp = {'x': kelpx, 'segments': []}
-        for i in range(random.randint(6, HEIGHT - 1)):
+        for _ in range(random.randint(6, HEIGHT - 1)):
             kelp['segments'].append(random.choice(['(', ')']))
         KELPS.append(kelp)
 
@@ -69,20 +69,20 @@ def main():
         clearAquarium()
         STEP += 1
 
-def getRandomcolor():
+def getRandomColor():
     return random.choice(('black', 'red', 'green', 'yellow', 'blue',
                           'purple', 'cyan', 'white'))
 
-def generateFisht():
+def generateFish():
     fishType = random.choice(FISH_TYPES)
 
     colorPattern = random.choice(('random', 'head-tail', 'single'))
-    fishtLength = len(fishType['right'][0])
+    fishLength = len(fishType['right'][0])
     if colorPattern == 'random':
         colors = []
-        for i in range(fishLength):
+        for _ in range(fishLength):
             colors.append(getRandomColor())
-    if colorPattern == 'single' or colorPattern = 'head-tail':
+    if colorPattern == 'single' or colorPattern == 'head-tail':
         colors = [getRandomColor()] * fishLength
     if colorPattern == 'head-tail':
         headTailColor = getRandomColor()
@@ -131,7 +131,7 @@ def simulateAquarium():
                 else:
                     fish['goingDown'] = False
             else:
-                if fish['y'] != TOP_EDE:
+                if fish['y'] != TOP_EDGE:
                     fish['y'] -= 1
                 else:
                     fish['goingDown'] = True
@@ -143,13 +143,13 @@ def simulateAquarium():
     
     for bubbler in BUBBLERS:
         if random.randint(1, 5) == 1:
-            BUBBLES.append({'x': bubbler, 'y': HEIGH - 2})
+            BUBBLES.append({'x': bubbler, 'y': HEIGHT - 2})
 
     for bubble in BUBBLES:
         diceRoll = random.randint(1, 6)
         if (diceRoll == 1) and (bubble['x'] != LEFT_EDGE):
             bubble['x'] -= 1
-        elif (diceRoll == 2) and (bubble['x' != RIGHT_EDGE]):
+        elif (diceRoll == 2) and (bubble['x'] != RIGHT_EDGE):
             bubble['x'] += 1
 
         bubble['y'] -= 1
@@ -184,13 +184,49 @@ def drawAquarium():
         if fish['goingRight']:
             fishText = fish['right'][STEP % len(fish['right'])]
         else:
-            fishtText = fish['left'][STEP % len(fish['left'])]
+            fishText = fish['left'][STEP % len(fish['left'])]
 
         for i, fishPart in enumerate(fishText):
             bext.fg(fish['colors'][i])
             print(fishPart, end='')
 
     bext.fg('green')
+    for kelp in KELPS:
+        for i, kelpSegment in enumerate(kelp['segments']):
+            if kelpSegment == '(':
+                bext.goto(kelp['x'], BOTTOM_EDGE - i)
+            elif kelpSegment == ')':
+                bext.goto(kelp['x'] + 1, BOTTOM_EDGE - i)
+            print(kelpSegment, end='')
 
+    bext.fg('yellow')
+    bext.goto(0, HEIGHT - 1)
+    print(chr(9617) * (WIDTH - 1), end='')
+    
+    sys.stdout.flush()
+
+def clearAquarium():
+    global FISHES, BUBBLERS, BUBBLES, KELP
+
+    for bubble in BUBBLES:
+        bext.goto(bubble['x'], bubble['y'])
+        print(' ', end='')
+
+    for fish in FISHES:
+        bext.goto(fish['x'], fish['y'])
+
+        print(' ' * len(fish['left'][0]), end='')
+
+    for kelp in KELPS:
+        for i, kelpSegment in enumerate(kelp['segments']):
+            bext.goto(kelp['x'], HEIGHT - 2 - i)
+            print('  ', end='')
+    sys.stdout.flush()
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit()
 
 
